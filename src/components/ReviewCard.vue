@@ -1,5 +1,6 @@
 <template>
   <article class="review-card" :class="{ 'is-favorite': !!review.favorite }">
+    <!-- !empleo de la prop -->
     <img
       v-if="review.cover"
       :src="review.cover"
@@ -49,6 +50,7 @@
 <script setup>
 import { computed } from "vue";
 
+ //!Recibe la prop-review del padre
 const props = defineProps({
   review: { type: Object, required: true }
 });

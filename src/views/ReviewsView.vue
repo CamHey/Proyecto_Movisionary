@@ -198,6 +198,8 @@ import { useReviews } from "../composables/useReviews";
 import ReviewCard from "../components/ReviewCard.vue";
 import TmdbMoviePicker from "../components/TmdbMoviePicker.vue";
 
+
+//Padre usa el composable//
 const {
   list,
   filter,

@@ -31,10 +31,7 @@
         <RouterLink :to="{ name:'news' }"     :class="{ active: isActive('/news') }">Noticias</RouterLink>
         <RouterLink :to="{ name:'reviews' }"  :class="{ active: isActive('/reviews') }">Reseñas</RouterLink>
         <RouterLink :to="{ name:'library' }"  :class="{ active: isActive('/library') }">Biblioteca</RouterLink>
-
-        <!-- ✅ NUEVO: Watchlist -->
-        <RouterLink :to="{ name:'watchlist' }" :class="{ active: isActive('/watchlist') }">Watchlist</RouterLink>
-
+       
         <RouterLink :to="{ name:'top' }"      :class="{ active: isActive('/top') }">Top 10</RouterLink>
 
         <!-- 🔁 Interruptor Modo Infantil -->
