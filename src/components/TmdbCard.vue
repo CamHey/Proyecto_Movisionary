@@ -1,6 +1,7 @@
 <!-- src/components/TmdbCard.vue -->
 <script setup>
 import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps({
   item: {
@@ -19,34 +20,56 @@ const year = computed(() => {
   return date ? date.slice(0, 4) : ''
 })
 
-const imgUrl = (path) =>
-  path ? `https://image.tmdb.org/t/p/w500${path}` : ''
+const imgUrl = (path) => (path ? `https://image.tmdb.org/t/p/w500${path}` : '')
+
+// ✅ Link al detalle
+const detailTo = computed(() => `/movie/${props.item.id}`)
 </script>
 
 <template>
-  <article class="card tmdb-card">
-    <!-- Póster -->
-      <!-- TODO: Directivas-->
-    <div class="thumb" v-if="item.poster_path">
-      <img v-bind:src="imgUrl(item.poster_path)" :alt="title" />
-    </div>
+  <RouterLink :to="detailTo" class="tmdb-link" aria-label="Ver detalle">
+    <article class="card tmdb-card">
+      <!-- Póster -->
+      <div class="thumb" v-if="item.poster_path">
+        <img
+          :src="imgUrl(item.poster_path)"
+          :alt="title"
+          loading="lazy"
+          width="300"
+          height="450"
+        />
+      </div>
 
-    <!-- Contenido -->
-    <div class="content">
-      <h3>{{ title }}</h3>
-      <p class="meta">
-        <span v-if="year">{{ year }} · </span>
-        ⭐ {{ rating }}
-      </p>
-    </div>
-  </article>
+      <!-- Contenido -->
+      <div class="content">
+        <h3>{{ title }}</h3>
+        <p class="meta">
+          <span v-if="year">{{ year }} · </span>
+          ⭐ {{ rating }}
+        </p>
+      </div>
+    </article>
+  </RouterLink>
 </template>
 
 <style scoped>
+.tmdb-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.tmdb-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+
 .tmdb-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  cursor: pointer;
 }
 
 /* Asegura que la imagen ocupe bien la parte de arriba */

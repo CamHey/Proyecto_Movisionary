@@ -1,8 +1,8 @@
 // src/composables/useQuiz.js
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 export function useQuiz(fields, storageKey = 'quiz-state-v1') {
-  // objeto { mood: null, genres: null, ... }
+  // objeto { mood: null, genero: null, ... }
   const data = ref(Object.fromEntries(fields.map(f => [f, null])))
   const currentStep = ref(1)
   const totalSteps = fields.length
@@ -24,16 +24,12 @@ export function useQuiz(fields, storageKey = 'quiz-state-v1') {
       const raw = localStorage.getItem(storageKey)
       if (!raw) return
       const s = JSON.parse(raw)
-      if (s?.data) {
-        // merge para no perder estructura
-        data.value = { ...data.value, ...s.data }
-      }
-      if (s?.currentStep) {
-        currentStep.value = s.currentStep
-      }
+      if (s?.data) data.value = { ...data.value, ...s.data }
+      if (s?.currentStep) currentStep.value = s.currentStep
     } catch {}
   }
 
+  // ✅ helpers (por si alguna vista los usa)
   const setAnswer = (key, val) => {
     if (key in data.value) {
       data.value[key] = val
@@ -43,7 +39,6 @@ export function useQuiz(fields, storageKey = 'quiz-state-v1') {
 
   const getAnswer = (key) => data.value[key]
 
-  // payload para mandar a recomendador o console.log
   const toPayload = () => ({ ...data.value })
 
   const goTo = (n) => {
@@ -65,6 +60,9 @@ export function useQuiz(fields, storageKey = 'quiz-state-v1') {
   }
 
   restore()
+
+  // ✅ Persist automático cuando cambian respuestas por v-model
+  watch(() => data.value, () => persist(), { deep: true })
 
   return {
     data,

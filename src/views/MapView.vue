@@ -1,3 +1,4 @@
+<!-- src/views/MapView.vue -->
 <template>
   <div class="page-map">
     <!-- Hero -->
@@ -14,35 +15,14 @@
 
     <!-- Contenido -->
     <main class="container">
+      <!-- ✅ SOLO 1 columna, sin la tarjeta de descripción -->
       <section class="grid-auto">
         <article class="card">
-          <div class="content">
-            <h2>Descripción de la integración</h2>
-            <p class="meta">
-              Esta sección funciona como un mapa conceptual de disponibilidad:
-              por cada título del catálogo se listan las plataformas donde está
-              disponible (Netflix, Disney+, Prime Video, HBO Max, etc.).
-            </p>
-            <ul class="meta-list">
-              <li>
-                En esta demo los datos son simulados, pero el diseño está listo
-                para conectarse a una API real en el futuro.
-              </li>
-              <li>
-                Se pueden aplicar filtros por plataforma y tipo de contenido
-                (películas o series).
-              </li>
-              <li>
-                La vista es útil para responder rápidamente “¿dónde lo veo?” sin
-                salir de Movisionary.
-              </li>
-            </ul>
-          </div>
-        </article>
-
-        <article class="card">
-          <!-- ! componente reutilizable -->
-          <StreamingMap />
+          <StreamingMap
+            :initialTitle="initialTitle"
+            :initialPlatform="initialPlatform"
+            :initialRegion="initialRegion"
+          />
         </article>
       </section>
     </main>
@@ -56,18 +36,27 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import StreamingMap from '../components/StreamingMap.vue'
+
+const route = useRoute()
+
+// ✅ helper: si query param viene como array, agarramos el primero
+const toStr = (v, fallback = '') => (Array.isArray(v) ? (v[0] ?? fallback) : (v ?? fallback))
+
+// ✅ props iniciales desde URL: /map?title=Dune&platform=Netflix&region=BO
+const initialTitle = computed(() => toStr(route.query.title, ''))
+const initialPlatform = computed(() => toStr(route.query.platform, 'Todas'))
+const initialRegion = computed(() => toStr(route.query.region, 'BO'))
 </script>
 
 <style scoped>
-.meta-list {
-  margin-top: 0.75rem;
-  padding-left: 1.2rem;
-  font-size: 0.9rem;
-  opacity: 0.95;
-}
-
-.meta-list li + li {
-  margin-top: 0.25rem;
+/* ✅ 1 columna */
+.grid-auto {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 </style>

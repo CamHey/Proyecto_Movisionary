@@ -13,8 +13,9 @@
         <p class="muted">
           Ranking actualizado desde TMDb
         </p>
-        <!-- TODO: Directivas-->
-        <button class="btn" type="button" @click="loadMore()" v-bind="btnDisabled">
+
+        <!-- ✅ sin error: disabled es boolean -->
+        <button class="btn" type="button" @click="loadMore()" :disabled="btnDisabled">
           {{ btnText }}
         </button>
       </section>

@@ -3,7 +3,6 @@
   <section class="page-reviews">
     <!-- HERO -->
     <section class="hero hero-reviews container hero-reviews-page">
-
       <p class="eyebrow">Cine &amp; Series · Opinión</p>
       <h1 class="gradient-title">Reseñas de la comunidad</h1>
       <p class="sub">
@@ -86,6 +85,12 @@
                 class="input"
                 placeholder="Nombre de la película o serie"
               />
+              <p v-if="form.tmdbId" class="field-mini-hint">
+                Vinculado a Comunidad ✅ (tmdbId: {{ form.tmdbId }})
+              </p>
+              <p v-else class="field-mini-hint">
+                Tip: si eliges desde TMDb, podrás usar “Ir a Comunidad”.
+              </p>
             </div>
 
             <div class="field">
@@ -135,7 +140,9 @@
             ></textarea>
           </div>
 
+          <!-- ocultos -->
           <input v-model="form.cover" type="hidden" />
+          <input v-model="form.tmdbId" type="hidden" />
 
           <div class="form-actions">
             <button type="button" class="btn btn-ghost" @click="clearForm">
@@ -186,10 +193,10 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { useReviews } from '../composables/useReviews'
-import ReviewCard from '../components/ReviewCard.vue'
-import TmdbMoviePicker from '../components/TmdbMoviePicker.vue'
+import { computed, ref } from "vue";
+import { useReviews } from "../composables/useReviews";
+import ReviewCard from "../components/ReviewCard.vue";
+import TmdbMoviePicker from "../components/TmdbMoviePicker.vue";
 
 const {
   list,
@@ -199,89 +206,92 @@ const {
   error,
   addReview,
   toggleFavorite
-} = useReviews()
+} = useReviews();
 
 const form = ref({
-  title: '',
-  cat: '',
-  by: '',
+  title: "",
+  cat: "",
+  by: "",
   score: 3.5,
-  text: '',
-  cover: ''
-})
+  text: "",
+  cover: "",
+  tmdbId: "" // ✅ nuevo: vínculo a /movie/:id#community
+});
 
 const currentFilterLabel = computed(() => {
   switch (filter.value) {
-    case 'drama':
-      return 'Drama'
-    case 'scifi':
-      return 'Sci-Fi'
-    case 'animation':
-      return 'Animación'
-    case 'thriller':
-      return 'Thriller'
+    case "drama":
+      return "Drama";
+    case "scifi":
+      return "Sci-Fi";
+    case "animation":
+      return "Animación";
+    case "thriller":
+      return "Thriller";
     default:
-      return 'Todas las categorías'
+      return "Todas las categorías";
   }
-})
+});
 
 function clearForm() {
   form.value = {
-    title: '',
-    cat: '',
-    by: '',
+    title: "",
+    cat: "",
+    by: "",
     score: 3.5,
-    text: '',
-    cover: ''
-  }
+    text: "",
+    cover: "",
+    tmdbId: "" // ✅ reset
+  };
 }
 
 // TMDb genres → nuestra categoría
 function inferCatFromGenres(genreIds = []) {
-  if (!Array.isArray(genreIds)) return ''
+  if (!Array.isArray(genreIds)) return "";
 
-  if (genreIds.includes(16)) return 'animation'
-  if (genreIds.includes(878)) return 'scifi'
-  if (genreIds.includes(53)) return 'thriller'
-  if (genreIds.includes(18)) return 'drama'
+  if (genreIds.includes(16)) return "animation";
+  if (genreIds.includes(878)) return "scifi";
+  if (genreIds.includes(53)) return "thriller";
+  if (genreIds.includes(18)) return "drama";
 
-  return ''
+  return "";
 }
 
 function onPickMovieFromTmdb(movie) {
-  const title = movie.title || movie.name
+  const title = movie.title || movie.name;
   const poster = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : ''
+    : "";
 
-  form.value.title = title
-  form.value.cover = poster
+  form.value.title = title;
+  form.value.cover = poster;
 
-  const autoCat = inferCatFromGenres(movie.genre_ids || [])
-  if (autoCat) form.value.cat = autoCat
+  // ✅ clave: tmdbId para “Ir a Comunidad”
+  form.value.tmdbId = String(movie.id || "");
+
+  const autoCat = inferCatFromGenres(movie.genre_ids || []);
+  if (autoCat) form.value.cat = autoCat;
 }
 
 function onSubmit() {
-  const { title, text } = form.value
+  const { title, text } = form.value;
 
-  // Solo exigimos título y texto; la categoría se rellena o se pone 'drama'
   if (!title || !text) {
-    alert('Completa al menos el título y la reseña.')
-    return
+    alert("Completa al menos el título y la reseña.");
+    return;
   }
 
   const payload = {
     ...form.value,
-    cat: form.value.cat || 'drama' // por si TMDb no detecta nada o no eliges
-  }
+    cat: form.value.cat || "drama"
+  };
 
-  addReview(payload)
-  clearForm()
+  addReview(payload);
+  clearForm();
 }
 
-
 function handleToggleFavorite(id) {
-  toggleFavorite(id)
+  toggleFavorite(id);
 }
 </script>
 
@@ -408,14 +418,12 @@ function handleToggleFavorite(id) {
   resize: vertical;
 }
 
-/* el input de TMDb también entra aquí, pero si quieres hacerlo
-   un pelín más pill, puedes afinarlo así: */
+/* el input de TMDb también entra aquí */
 .review-form :deep(.tmdb-picker__input) {
   border-radius: 999px;
 }
 
 /* --- Buscador superior dentro de filtros --- */
-
 .filters-row {
   align-items: center;
   justify-content: space-between;
@@ -438,23 +446,22 @@ function handleToggleFavorite(id) {
   transform: translateY(1px);
 }
 
-/* Este es el input blanco feo 😂 */
+/* ✅ input del buscador */
 .search-bar .input {
-  padding-top: 2rem;
-  border: none;
+  border: 0;
   background: transparent;
   color: #f9fafb;
-  padding: 0;
-  font-size: 0.85rem;
+  padding: 0.25rem 0;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  width: 100%;
   outline: none;
- 
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .search-bar .input::placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
-
-
-
-
 </style>

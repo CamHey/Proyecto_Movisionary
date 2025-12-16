@@ -1,4 +1,4 @@
-<!-- !Componente  hijo-->
+<!-- src/views/Home.vue (o donde tengas este componente) -->
 <template>
   <section class="page-home">
     <!-- HERO -->
@@ -20,8 +20,16 @@
             <RouterLink class="btn btn-primary" to="/recommender">
               Probar Recomendador
             </RouterLink>
+
             <RouterLink class="btn btn-ghost" to="/news">
               Ver estrenos
+            </RouterLink>
+
+            <!-- CTA fuerte Demo TMDb -->
+            <RouterLink class="btn btn-demo-hero" to="/tmdb">
+              <span class="demo-dot"></span>
+              Demo TMDb
+              <span class="demo-badge">NEW</span>
             </RouterLink>
           </div>
 
@@ -50,15 +58,15 @@
           <h2 class="grad-subtitle">Destacados de la semana</h2>
           <RouterLink class="link" to="/library">Ver todo →</RouterLink>
         </div>
-        <!-- ! componente reutilizable -->
-        <FeaturedGrid />
+
+        <!-- Limitamos la cantidad de destacados -->
+        <FeaturedGrid :limit="8" />
       </div>
     </section>
 
     <!-- BLOQUE: RESEÑAS + NOTICIAS -->
     <section class="section">
       <div class="container split">
-        <!-- ! componente reutilizable -->
         <LatestReviewsPanel />
         <NewsPanel />
       </div>
@@ -76,7 +84,6 @@
         </div>
 
         <div class="cta-row">
-          <!-- Ya NO usamos href="#quiz-panel" ni :target, solo estado Vue -->
           <button
             type="button"
             class="btn btn-primary"
@@ -93,7 +100,6 @@
     </section>
 
     <!-- OVERLAY QUIZ controlado por estado -->
-      <!-- ?Dircetivas -->
     <QuizOverlay
       v-if="showQuiz"
       @close="showQuiz = false"
@@ -105,16 +111,13 @@
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
-// Usa rutas relativas si el @ te da problemas (así como lo pusiste)
 import FeaturedGrid from '../components/FeaturedGrid.vue'
 import LatestReviewsPanel from '../components/LatestReviewsPanel.vue'
 import NewsPanel from '../components/NewsPanel.vue'
 import QuizOverlay from '../components/QuizOverlay.vue'
 
-// Estado local para abrir/cerrar el overlay del quiz
 const showQuiz = ref(false)
 
-// Mensaje de saludo según la hora
 const saludo = computed(() => {
   const h = new Date().getHours()
   if (h < 12) return '¡Buenos días! ☀️'

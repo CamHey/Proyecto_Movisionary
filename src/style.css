@@ -12,8 +12,8 @@
    06) Noticias (cards + tags)
    07) Reseñas (cards + rating)
    08) Footer
-   09) Overlay Quiz (módulo)
-   10) Utilidades Responsivas Universales (grid-12, auto-fit, spans)
+   09) Overlay Quiz (módulo - Vue)
+   10) Utilidades Responsivas Universales + módulos extra
    ===================================================================== */
 
 
@@ -210,7 +210,6 @@ p,li{
 }
 
 /* --- SWITCH MODO INFANTIL (HEADER GENERAL) --- */
-/* Bloque texto + switch alineado con el resto */
 .kids-toggle{
   display:inline-flex;
   align-items:center;
@@ -295,8 +294,6 @@ p,li{
 }
 
 /* --- Responsive navegación --- */
-
-/* Tablet: ligeramente más compacto */
 @media (max-width:1024px){
   .header .container,
   .main-header .container{
@@ -368,14 +365,15 @@ p,li{
 .hero{
   position:relative;
   overflow:visible;
-  padding-block: 5rem 3rem; }
+  padding-block: 5rem 3rem;
+}
 
 /* Contenedor opcional, por si lo tenías */
-.hero .container {
-
+.hero .container{
   position: relative;
   z-index: 1;
 }
+
 .hero-gradient{
   position:absolute;
   inset:0;
@@ -385,11 +383,8 @@ p,li{
     radial-gradient(800px 500px at 90% 30%, #a78bfa22, transparent 60%),
     radial-gradient(800px 500px at 50% 90%, #f6e06b22, transparent 60%);
 }
-/* Hero específico de reseñas: más aire y sin cortes */
-
 
 .eyebrow{
-  
   display:inline-block;
   font-size:12px;
   letter-spacing:.18em;
@@ -397,14 +392,15 @@ p,li{
   color:#d3d7e7;
   margin-bottom:6px;
 }
+
 .gradient-title,
-.grad-title {
-  font-size: clamp(2rem, 4vw, 3rem);  /* un poco más grande en desktop */
-  line-height: 1.2;                       /* 👈 MÁS ALTO, ya no se “corta” */
-  margin: 0.1em 0 0.5em;                  /* un pelín menos arriba, más abajo */
-  max-width: 22ch;                        /* no se hace larguísimo */
-  white-space: normal;                    /* asegúrate que pueda saltar de línea */
-  overflow: visible;                      /* por si algo le ponía hidden */
+.grad-title{
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.2;
+  margin: 0.1em 0 0.5em;
+  max-width: 22ch;
+  white-space: normal;
+  overflow: visible;
 
   background: linear-gradient(90deg, var(--g1), var(--g2), var(--g3));
   -webkit-background-clip: text;
@@ -658,7 +654,7 @@ body.theme-light .btn-theme:hover{
 
 
 /* =========================================================================
-   06) NOTICIAS
+   06) NOTICIAS (base)
    ========================================================================= */
 .news-grid{
   display:grid;
@@ -740,17 +736,133 @@ body.theme-light .btn-theme:hover{
   font-weight:700;
 }
 
+/* --- Noticias: cards tipo “revista” (override, como tu screenshot) --- */
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:18px;
+  padding:18px 0 70px;
+}
+.news-card{
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.news-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(122,167,255,.35);
+  box-shadow:0 26px 70px rgba(0,0,0,.45);
+}
+.news-card .cover{
+  display:block;
+  aspect-ratio:16/9;
+  background:linear-gradient(135deg,#0f1420,#0b1020);
+  overflow:hidden;
+}
+.news-card .cover img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.news-card .noimg{
+  height:100%;
+  display:grid;
+  place-items:center;
+  opacity:.7;
+}
+.news-card .content{
+  padding:16px 16px 18px;
+  display:grid;
+  gap:10px;
+}
+.news-card .tag{
+  width:max-content;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:800;
+  color:#0b0f17;
+  letter-spacing:.02em;
+  box-shadow:0 10px 24px rgba(0,0,0,.22);
+}
+.news-card .tag.estrenos{ background:#c9e0ff; }
+.news-card .tag.premios{ background:#ffe8a8; }
+.news-card .tag.festivales{ background:#c8ffe8; }
+.news-card .tag.industria{ background:#e3d0ff; }
+
+.news-card h2,
+.news-card h3{
+  margin:0;
+  font-size:1.08rem;
+  line-height:1.25;
+  color:var(--text);
+}
+.news-card .meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.55rem;
+  align-items:center;
+  color:rgba(255,255,255,.70);
+  font-size:.92rem;
+}
+.news-card .meta .dot{
+  opacity:.6;
+}
+.news-card .excerpt{
+  margin:0;
+  color:rgba(255,255,255,.78);
+  font-size:.95rem;
+  line-height:1.55;
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.filters .chip{
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  padding:.55rem .9rem;
+  border-radius:999px;
+  cursor:pointer;
+}
+.filters .chip.is-active{
+  background:linear-gradient(90deg,var(--brand1),var(--brand2));
+  color:#0b0f17;
+  border-color:transparent;
+  font-weight:800;
+}
+
+body.theme-light .news-card{
+  background:#fff;
+  border-color:#e2e6ef;
+  box-shadow:0 10px 28px rgba(0,0,0,.10);
+}
+body.theme-light .news-card:hover{
+  border-color:#cfd7ea;
+  box-shadow:0 16px 40px rgba(0,0,0,.14);
+}
+body.theme-light .news-card .meta{
+  color:#4b5563;
+}
+body.theme-light .news-card .excerpt{
+  color:#374151;
+}
+
+
 /* =========================================================================
    07) RESEÑAS
    ========================================================================= */
-
-/* Hero específico para la página de reseñas */
 .hero.hero-reviews{
   padding:clamp(32px,5vw,56px) 0 16px;
   background:radial-gradient(600px 300px at 15% 0%, rgba(183,133,255,.12), transparent);
 }
 
-/* Grid de reseñas (alias para código viejo y nuevo) */
 .reviews-grid,
 .review-grid{
   display:grid;
@@ -759,7 +871,6 @@ body.theme-light .btn-theme:hover{
   padding:24px 0 64px;
 }
 
-/* Card base de reseña (compatible con versión nueva y vieja) */
 .review-card{
   position:relative;
   display:grid;
@@ -777,7 +888,6 @@ body.theme-light .btn-theme:hover{
   box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
 
-/* Encabezado: título + meta (autor, rating) */
 .review-card__header{
   display:flex;
   flex-direction:column;
@@ -797,21 +907,18 @@ body.theme-light .btn-theme:hover{
   color:var(--muted);
 }
 
-/* Texto de la reseña */
 .review-card__text{
   font-size:.95rem;
   color:var(--muted);
   margin:0.2rem 0 0.4rem;
 }
 
-/* Footer: botón “Favorito” u otras acciones */
 .review-card__footer{
   display:flex;
   justify-content:flex-end;
   align-items:center;
 }
 
-/* Estado favorito (para el ejemplo de props + eventos) */
 .review-card.is-favorite{
   border-color:#ffd166;
   box-shadow:
@@ -819,8 +926,7 @@ body.theme-light .btn-theme:hover{
     0 16px 40px rgba(0,0,0,.45);
 }
 
-/* 🧩 Soporte para markup antiguo (con imagen y .review-content/.review-footer) */
-
+/* markup antiguo */
 .review-card img{
   width:100%;
   height:200px;
@@ -868,7 +974,6 @@ body.theme-light .btn-theme:hover{
 }
 
 
-
 /* =========================================================================
    08) FOOTER
    ========================================================================= */
@@ -912,25 +1017,22 @@ body.theme-light .btn-theme:hover{
 
 
 /* =========================================================================
-   09) OVERLAY QUIZ
+   09) OVERLAY QUIZ (Vue: v-if / showQuiz)
    ========================================================================= */
-#quiz-panel.quiz-overlay{
+.quiz-overlay{
   position:fixed;
   inset:0;
-  z-index:80;
+  z-index:999;
   background:rgba(0,0,0,.6);
   display:grid;
   place-items:start center;
   padding:6vh 2vw;
-  opacity:0;
-  visibility:hidden;
-  transition:opacity .25s ease, visibility .25s ease;
-}
-#quiz-panel:target.quiz-overlay{
   opacity:1;
   visibility:visible;
+  transition:opacity .25s ease;
 }
 
+/* panel interno */
 #quiz-panel .quiz-panel{
   width:min(1100px,96vw);
   background:linear-gradient(180deg,rgba(255,255,255,.03),transparent), var(--card);
@@ -940,6 +1042,7 @@ body.theme-light .btn-theme:hover{
   overflow:hidden;
   animation:quiz-drop .25s ease-out;
 }
+
 @keyframes quiz-drop{
   from{ transform:translateY(-12px); opacity:.9; }
   to{ transform:none; opacity:1; }
@@ -1091,13 +1194,12 @@ input[type="radio"]{
 
 
 /* =========================================================================
-   /* 10) UTILIDADES RESPONSIVAS UNIVERSALES — reusables en cualquier HTML
-  */
- /*  ========================================================================= */
+   10) UTILIDADES RESPONSIVAS UNIVERSALES — reusables en cualquier HTML
+   ========================================================================= */
 
 /* Contenedor (acceso corto en sections/main) */
 .container, .wrap, main > section{
-  max-width:1200px; 
+  max-width:1200px;
   margin-inline:auto;
   padding-inline:1rem;
 }
@@ -1106,29 +1208,38 @@ input[type="radio"]{
 .grid-12{ display:grid; grid-template-columns:repeat(12,1fr); gap:1rem }
 .grid-auto{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem }
 
-/* Spans por hijos directos (control de columnas sin duplicar CSS) */
+/* ✅ TransitionGroup (TmdbLibrary grid) */
+.grid-enter-active,
+.grid-leave-active{
+  transition: .18s ease;
+}
+.grid-enter-from,
+.grid-leave-to{
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* Spans por hijos directos */
 .span-12 > *{ grid-column:span 12 }
 .span-6  > *{ grid-column:span 6 }
-.span-4  > *{ grid-column:span 4 } /* 3 col desktop */
-.span-3  > *{ grid-column:span 3 } /* 4 col desktop */
+.span-4  > *{ grid-column:span 4 }
+.span-3  > *{ grid-column:span 3 }
 
-/* Breakpoints (modificadores) */
 @media (max-width:1024px){
   .md-span-12 > *{ grid-column:span 12 }
-  .md-span-6  > *{ grid-column:span 6 }  /* 2 columnas */
+  .md-span-6  > *{ grid-column:span 6 }
   .md-span-4  > *{ grid-column:span 4 }
 }
 @media (max-width:768px){
-  .sm-span-12 > *{ grid-column:1 / -1 }  /* 1 columna */
+  .sm-span-12 > *{ grid-column:1 / -1 }
   .sm-span-6  > *{ grid-column:span 6 }
 }
-
-
 
 /* Tarjetas base reutilizables (para listas mixtas) */
 .card,.news-card,.review-card{
   background:var(--card); border:1px solid var(--stroke); border-radius:16px; overflow:hidden;
 }
+
 /* ======== utilidades extra ======== */
 .empty-state{
   display:grid; place-items:center; text-align:center; padding:24px;
@@ -1146,6 +1257,7 @@ input[type="radio"]{
   border-radius:12px; padding:.8rem 1rem; font: inherit;
 }
 .form-grid .full{ grid-column: 1 / -1; }
+
 /* SELECTS del recomendador / formularios */
 .form-grid select{
   width: 100%;
@@ -1157,19 +1269,14 @@ input[type="radio"]{
   font: inherit;
   box-shadow: 0 2px 8px rgba(0,0,0,.25);
 
-  /* quitar estilo nativo para que respeten los estilos */
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-
-/* Placeholder cuando el modelo está vacío */
 .form-grid select.is-placeholder{
   color: var(--muted);
   font-style: italic;
 }
-
-/* Opciones del desplegable (la lista blanca seguirá siendo del SO, eso es normal) */
 .form-grid select option{
   color: #a8ffd0;
 }
@@ -1177,24 +1284,18 @@ input[type="radio"]{
   color: #9ca3af;
 }
 
-
 /* ranking (Top 10) */
 .list.ranked .item em{ font-style:normal; color:var(--muted); }
 
-/* ?NOTICIAS-Date */
-
-
-
 .filters .chip.is-active{ outline:2px solid var(--brand1, #7aa7ff); }
+
 /* --- Meta-bar (arriba) --- */
 .news-meta{
   display:flex; flex-wrap:wrap; gap:1rem; align-items:center;
   background:var(--panel, #121826);
   border:1px solid var(--stroke, #2a3448);
   border-radius:14px; padding:1rem 1rem; margin:2rem 0 1.25rem ;
-
 }
-
 .news-meta time{ font-weight:700; }
 
 /* --- Select como chip --- */
@@ -1208,7 +1309,7 @@ input[type="radio"]{
   background-image: linear-gradient(transparent,transparent),
                     radial-gradient(currentColor, currentColor);
   background-position: right 1rem center, right .9rem center;
-  background-size: 0 0, .35rem .35rem; /* puntito como caret */
+  background-size: 0 0, .35rem .35rem;
   background-repeat:no-repeat;
 }
 #news-sort:focus{ box-shadow:0 0 0 3px rgba(122,167,255,.25); }
@@ -1219,7 +1320,7 @@ input[type="radio"]{
 }
 .news-card .cover img{
   width:100%;
-  aspect-ratio:16/9;          /* todas iguales */
+  aspect-ratio:16/9;
   object-fit:cover;
   display:block;
 }
@@ -1229,46 +1330,39 @@ input[type="radio"]{
   display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;
   color:var(--muted, #a7b0c0); font-size:.95rem;
 }
-
-/* Crea los separadores con CSS (•), sin meter “·” en el HTML/JS */
 .news-card .meta > *{ position:relative; padding-left:.75rem; }
 .news-card .meta > *:first-child{ padding-left:0; }
 .news-card .meta > *:not(:first-child)::before{
   content:"•"; position:absolute; left:.15rem; opacity:.7;
 }
-/* ? */
 
-
-/* *Mensajes */
-/* ==== Mensaje del día (SWITCH en Noticias) ==== */
-#news-msg  {
+/* ==== Mensajes del día ==== */
+#news-msg{
   margin-top: 8px;
   font-size: 1.1em;
   font-weight: 500;
   color: var(--accent, #5be3b4);
   text-align: center;
 }
-#greeting {
+#greeting{
   margin-top: 8px;
   font-size: 1.1em;
   font-weight: 500;
   color: var(--accent, #5be3b4);
   text-align: center;
 }
-/* --------------------- */
+
+
 /* =========================================================
    🎬 SECCIÓN: PÁGINAS DE CICLOS (library.html / top.html)
    ========================================================= */
-
-/* === Contenedor general === */
-.wrap, .container {
+.wrap, .container{
   max-width: 1100px;
   margin: 0 auto;
   padding: 24px;
 }
 
-/* === Toolbar === */
-.toolbar {
+.toolbar{
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1280,8 +1374,7 @@ input[type="radio"]{
   box-shadow: 0 2px 12px rgba(0,0,0,.25);
 }
 
-/* === Botón "Cargar más" === */
-.btn {
+.btn{
   padding: 0.6rem 1.2rem;
   border: 1px solid var(--stroke, #2a3448);
   background: var(--card, #1a2234);
@@ -1291,43 +1384,41 @@ input[type="radio"]{
   cursor: pointer;
   transition: all .3s ease;
 }
-.btn:hover {
+.btn:hover{
   background: var(--accent, #5be3b4);
   color: #0b0f17;
   transform: translateY(-2px);
 }
 
-/* === Tabla (FOR) === */
-.table {
+.table{
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
-.table th, .table td {
+.table th, .table td{
   padding: 12px 14px;
   text-align: left;
   border-bottom: 1px solid var(--stroke, #2a3448);
 }
-.table th {
+.table th{
   background: rgba(255,255,255,0.03);
   color: var(--accent, #5be3b4);
   text-transform: uppercase;
   letter-spacing: .05em;
   font-size: 0.9rem;
 }
-.table tbody tr:hover {
+.table tbody tr:hover{
   background: rgba(91, 227, 180, 0.08);
   transition: background .3s ease;
 }
 
-/* === Mini-cards (DO...WHILE) === */
-.grid-mini {
+.grid-mini{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 16px;
   margin-top: 18px;
 }
-.mini {
+.mini{
   background: var(--card, #1a2234);
   border: 1px solid var(--stroke, #2a3448);
   border-radius: 12px;
@@ -1335,67 +1426,61 @@ input[type="radio"]{
   box-shadow: 0 2px 10px rgba(0,0,0,.25);
   transition: transform .3s ease, box-shadow .3s ease;
 }
-.mini:hover {
+.mini:hover{
   transform: translateY(-4px);
   box-shadow: 0 6px 14px rgba(0,0,0,.35);
 }
-.mini strong {
+.mini strong{
   color: var(--brand1, #7aa7ff);
   font-size: 1.05rem;
 }
 
-/* === Hero ajustes para library / top === */
-
-.hero .eyebrow {
-  padding-left: 2rem;  
+/* Hero ajustes para library / top */
+.hero .eyebrow{
+  padding-left: 2rem;
   font-size: 0.9rem;
   letter-spacing: 1px;
   color: var(--muted, #a7b0c0);
   text-transform: uppercase;
 }
-.hero .gradient-title {
-  padding-left: 3rem;  
+.hero .gradient-title{
+  padding-left: 3rem;
   font-size: 2.5rem;
   background: linear-gradient(90deg, var(--brand1, #7aa7ff), var(--accent, #5be3b4));
-  /* 1) estándar */
   background-clip: text;
-  color: transparent;             /* fallback estándar */
-  /* 2) prefijos (Safari/WebKit) */
+  color: transparent;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: .2em 0;
 }
-.hero .sub {
+.hero .sub{
   padding-left: 4.5rem;
   color: var(--muted, #a7b0c0);
   font-size: 1.1rem;
   margin-bottom: 20px;
 }
-
-/* === Responsividad === */
-@media (max-width: 768px) {
-  .toolbar {
+@media (max-width: 768px){
+  .toolbar{
     flex-direction: column;
     gap: 10px;
     align-items: stretch;
   }
-  .table th, .table td { padding: 10px; }
-  .hero .gradient-title { font-size: 2rem; }
+  .table th, .table td{ padding: 10px; }
+  .hero .gradient-title{ font-size: 2rem; }
 }
+
+
 /* =========================================================
    🎠 MODO INFANTIL — PORTAL COLORIDO (KidsView.vue)
    ========================================================= */
-
-/* Fondo general tipo portal educativo */
-.kids-body {
+.kids-body{
   margin: 0;
   font-family: 'Poppins', system-ui, sans-serif;
   color: #14506b;
   background: linear-gradient(to bottom, #b9f3ff 0%, #e5fbff 35%, #fffdf5 100%);
 }
 
-/* HEADER INFANTIL */
-.kids-header {
+.kids-header{
   position: sticky;
   top: 0;
   z-index: 60;
@@ -1407,30 +1492,27 @@ input[type="radio"]{
   box-shadow: 0 8px 22px rgba(0, 180, 210, 0.35);
 }
 
-.kids-header .logo {
+.kids-header .logo{
   display: flex;
   align-items: center;
   gap: 8px;
   color: #ffffff;
 }
-
-.kids-header .logo-text {
+.kids-header .logo-text{
   font-weight: 800;
   font-size: 1.5rem;
 }
-.kids-header .logo-text span {
+.kids-header .logo-text span{
   color: #ffe66d;
 }
 
-/* NAV TABS */
-.kids-nav {
+.kids-nav{
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
 }
-
-.kids-nav a {
+.kids-nav a{
   padding: 8px 16px;
   border-radius: 999px;
   background: rgba(255,255,255,0.18);
@@ -1440,20 +1522,17 @@ input[type="radio"]{
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   transition: all .22s ease;
 }
-
-.kids-nav a:hover {
+.kids-nav a:hover{
   background: #ffffff;
   transform: translateY(-2px);
 }
-
-.kids-nav a.active {
+.kids-nav a.active{
   background: linear-gradient(90deg, #ffe66d, #ff9bd5);
   color: #16324f;
   box-shadow: 0 4px 14px rgba(255, 155, 213, 0.4);
 }
 
-/* BOTÓN SALIR */
-.kids-actions .btn-exit-kids {
+.kids-actions .btn-exit-kids{
   padding: 8px 18px;
   border-radius: 999px;
   background: #ff6b81;
@@ -1465,13 +1544,11 @@ input[type="radio"]{
   box-shadow: 0 4px 14px rgba(255, 107, 129, .5);
 }
 
-/* CONTENIDO */
-.kids-main {
+.kids-main{
   padding: 26px 40px 32px;
 }
 
-/* TÍTULOS CON DEGRADADO */
-.kids-title {
+.kids-title{
   font-size: 2.1rem;
   font-weight: 800;
   margin: 0 0 6px;
@@ -1481,22 +1558,17 @@ input[type="radio"]{
   color: transparent;
 }
 
-.kids-subtitle {
+.kids-subtitle{
   color: #447a8f;
   margin: 0 0 18px;
   font-size: 0.98rem;
 }
 
-/* SECCIONES */
-.kids-section { display: none; animation: kidsFadeIn .25s ease; }
-.kids-section.active { display: block; }
+.kids-section{ display: none; animation: kidsFadeIn .25s ease; }
+.kids-section.active{ display: block; }
 
-/* =========================================================
-   🎨  NUEVO: GRID CONTROLADA (NO ANCHA)
-   ========================================================= */
-
-.kids-grid {
-  max-width: 960px;        /* ✅ NO TAN ANCHO */
+.kids-grid{
+  max-width: 960px;
   margin: 22px auto;
   display: flex;
   flex-wrap: wrap;
@@ -1504,35 +1576,31 @@ input[type="radio"]{
   justify-content: center;
 }
 
-/* --- VARIANTE 1: TARJETAS "STATS" (INICIO) --- */
-.kids-grid--stats .kids-card {
+.kids-grid--stats .kids-card{
   flex: 1 1 260px;
   max-width: 260px;
 
-  background: linear-gradient(135deg, #ff5f8f, #ffcf4b); /* ❤️ ESTILO MOVISIONARY */
+  background: linear-gradient(135deg, #ff5f8f, #ffcf4b);
   border-radius: 26px;
   padding: 1.4rem 1.2rem;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
   color: #0b1020;
   text-align: center;
 }
-
-.kids-grid--stats .kids-card h3 {
+.kids-grid--stats .kids-card h3{
   font-size: 1.4rem;
   font-weight: 800;
 }
-.kids-grid--stats .kids-card p {
+.kids-grid--stats .kids-card p{
   font-size: 0.9rem;
   opacity: 0.9;
 }
-.kids-main {
+.kids-main{
   padding: 26px 40px 32px;
-  min-height: calc(100vh - 140px); /* empuja el kids-footer hacia abajo */
+  min-height: calc(100vh - 140px);
 }
 
-
-/* --- VARIANTE 2: TARJETAS DEL CATÁLOGO --- */
-.kids-grid--catalog .kids-card {
+.kids-grid--catalog .kids-card{
   flex: 1 1 260px;
   max-width: 260px;
 
@@ -1542,8 +1610,7 @@ input[type="radio"]{
   padding: 14px;
   box-shadow: 0 12px 36px rgba(0,0,0,0.35);
 }
-
-.kids-grid--catalog .kids-card img {
+.kids-grid--catalog .kids-card img{
   width: 100%;
   height: 210px;
   object-fit: cover;
@@ -1551,7 +1618,7 @@ input[type="radio"]{
   margin-bottom: 10px;
 }
 
-.tag-age {
+.tag-age{
   background: linear-gradient(135deg,#22c1c3,#fdbb2d);
   color: #0b1020;
   padding: 4px 10px;
@@ -1561,15 +1628,13 @@ input[type="radio"]{
   box-shadow: 0 2px 6px rgba(0,0,0,.18);
 }
 
-/* NOTICIAS Y RESEÑAS INFANTILES */
-.kids-list {
+.kids-list{
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-
 .kids-news,
-.kids-review {
+.kids-review{
   background: #ffffff;
   border-radius: 22px;
   padding: 12px 16px;
@@ -1577,153 +1642,266 @@ input[type="radio"]{
   border-left: 5px solid #00c4cc;
 }
 
-/* TOP 10 */
-.kids-top {
+.kids-top{
   background: #ffffff;
   padding: 16px;
   border-radius: 22px;
   box-shadow: 0 6px 18px rgba(0, 180,210, .18);
 }
 
-/* RECOMENDADOR */
-.kids-form select {
+.kids-form select{
   border: 2px solid #00c4cc;
   background: #fff;
 }
 
-.kids-result {
+.kids-result{
   background: #ffffff;
   border-radius: 18px;
   padding: 10px 14px;
   box-shadow: 0 4px 14px rgba(0, 180, 210, 0.16);
 }
 
-/* FOOTER */
-.kids-footer {
+.kids-footer{
   text-align: center;
   padding: 18px 0;
   color: #3f6f86;
   font-size: .8rem;
 }
 
-/* ANIMACIÓN */
-@keyframes kidsFadeIn {
+@keyframes kidsFadeIn{
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+
 /* =========================================================
    🌞 AJUSTES VISUALES PARA MODO CLARO (Contraste y armonía)
    ========================================================= */
-body.theme-light {
+body.theme-light{
   background: #f5f6fa;
   color: #111;
 }
 
-/* ✅ Textos generales más oscuros */
 body.theme-light h1,
 body.theme-light h2,
 body.theme-light h3,
 body.theme-light p,
 body.theme-light a,
-body.theme-light li {
+body.theme-light li{
   color: #111;
 }
 
-/* ✅ Barra superior / toolbars */
 body.theme-light .news-meta,
 body.theme-light .toolbar,
-body.theme-light .panel {
+body.theme-light .panel{
   background: #ffffff;
   border-color: #ccc;
   color: #111;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
-/* ✅ Botones principales */
 body.theme-light .btn,
-body.theme-light .btn-primary {
+body.theme-light .btn-primary{
   background: linear-gradient(90deg, #6a9cff, #ffd66e);
   color: #0b0f17;
   border: none;
   box-shadow: 0 3px 10px rgba(0,0,0,0.12);
 }
-body.theme-light .btn:hover {
+body.theme-light .btn:hover{
   transform: translateY(-1px);
   box-shadow: 0 5px 14px rgba(0,0,0,0.16);
 }
 
-/* ✅ Noticias / Cards */
 body.theme-light .news-card,
-body.theme-light .review-card {
+body.theme-light .review-card{
   background: #fff;
   border-color: #ddd;
   color: #111;
   box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
 body.theme-light .news-card p,
-body.theme-light .review-card p {
+body.theme-light .review-card p{
   color: #333;
 }
 
-/* ✅ Meta-bar en gris suave */
 body.theme-light .news-meta time,
-body.theme-light .meta {
+body.theme-light .meta{
   color: #333;
 }
 
-/* ✅ Chips / tags */
-body.theme-light .filters .chip {
+body.theme-light .filters .chip{
   background: #f0f1f5;
   color: #111;
   border-color: #ccc;
 }
-body.theme-light .filters .chip.is-active {
+body.theme-light .filters .chip.is-active{
   background: linear-gradient(90deg, #6a9cff, #ffd66e);
   color: #0b0f17;
 }
 
-/* ✅ Header translúcido claro */
 body.theme-light .header,
-body.theme-light .main-header {
+body.theme-light .main-header{
   background: rgba(255,255,255,0.8);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid #ddd;
 }
 
-/* ✅ Links del menú */
-body.theme-light .menu a {
+body.theme-light .menu a{
   color: #0a0a0a;
 }
-body.theme-light .menu a.active {
+body.theme-light .menu a.active{
   background: rgba(0,0,0,0.06);
   border-color: #ccc;
 }
-body.theme-light .menu a:hover {
+body.theme-light .menu a:hover{
   background: rgba(0,0,0,0.08);
 }
 
-/* ✅ Footer */
 body.theme-light .footer,
-body.theme-light .main-footer {
+body.theme-light .main-footer{
   background: #fff;
   color: #444;
   border-top: 1px solid #ddd;
 }
-body.theme-light .foot-links a {
+body.theme-light .foot-links a{
   color: #333;
 }
-body.theme-light .foot-links a:hover {
+body.theme-light .foot-links a:hover{
   color: #000;
 }
 
-/* ✅ Switch modo infantil */
-body.theme-light .kids-toggle {
+body.theme-light .kids-toggle{
   background: rgba(0,0,0,0.04);
 }
-body.theme-light .kids-slider {
+body.theme-light .kids-slider{
   background: rgba(0,0,0,0.15);
 }
-body.theme-light .kids-switch input:checked + .kids-slider {
+body.theme-light .kids-switch input:checked + .kids-slider{
   background: linear-gradient(90deg, #ff7ec4, #ffd54a);
+}
+/* =========================================================
+   🎬 BOTÓN “DEMO TMDb” — flotante y visible (NO rompe nada)
+   ========================================================= */
+.demo-tmdb-btn{
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 9999;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.20);
+  color: var(--text);
+
+  box-shadow: 0 16px 40px rgba(0,0,0,.45);
+  backdrop-filter: blur(10px);
+
+  font-weight: 800;
+  font-size: .95rem;
+}
+
+.demo-tmdb-btn::before{
+  content: "🎬";
+}
+
+.demo-tmdb-btn:hover{
+  background: rgba(255,255,255,.14);
+  transform: translateY(-1px);
+}
+
+.demo-tmdb-btn:active{
+  transform: translateY(0);
+}
+
+.demo-tmdb-btn:focus-visible{
+  outline: 2px solid rgba(255,255,255,.55);
+  outline-offset: 3px;
+}
+
+/* En tema claro para que se vea igual de bien */
+body.theme-light .demo-tmdb-btn{
+  background: rgba(0,0,0,.06);
+  border: 1px solid rgba(0,0,0,.14);
+  color: #0b0f17;
+}
+/* Demo TMDb dentro del HERO (junto a Ver estrenos) */
+.btn-demo-hero{
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+}
+
+.btn-demo-hero:hover{
+  background: linear-gradient(90deg,var(--brand1),var(--brand2));
+  color:#0b0f17;
+  border-color: transparent;
+}
+
+
+/* CTA fuerte: Demo TMDb */
+.btn-demo-hero{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 18px;
+  border-radius: 14px;
+
+  font-weight: 800;
+  letter-spacing: .2px;
+
+  color: #0b1020;
+  border: 1px solid rgba(255,255,255,.10);
+
+  background: linear-gradient(135deg,
+    var(--brand-1, #7aa7ff),
+    var(--brand-2, #b88cff)
+  );
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.08) inset;
+}
+
+.btn-demo-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: inherit;
+  background: radial-gradient(60% 120% at 10% 10%, rgba(255,255,255,.55), transparent 55%);
+  opacity: .35;
+  pointer-events:none;
+}
+
+.btn-demo-hero:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.btn-demo-hero:active{
+  transform: translateY(0);
+}
+
+.btn-demo-hero .demo-dot{
+  width: 10px; height: 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.55);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.18);
+}
+
+.btn-demo-hero .demo-badge{
+  margin-left: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  background: rgba(0,0,0,.25);
+  color: rgba(255,255,255,.95);
 }

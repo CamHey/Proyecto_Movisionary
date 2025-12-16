@@ -2,13 +2,29 @@
 
 Plataforma web para descubrir películas y series: noticias, reseñas de la comunidad, recomendador, modo infantil y demo de integración con la API de TMDb.
 
+
 ## Tecnologías
 
 - Vue 3 + Vite
-- Vue Router
-- JavaScript (Composition API, composables)
-- CSS propio (styles.css unificado)
+- Vue Router (lazy-loading + scrollBehavior)
+- JavaScript (Composition API + composables)
+- CSS propio unificado (`src/style.css`)
 - API pública de TMDb (The Movie Database)
+
+## Funcionalidades (resumen)
+
+- Exploración de títulos: tendencias, búsqueda y discover (TMDb)
+- Estados de carga y error (`loading / error`) + paginación cuando aplica
+- Ruta dinámica de detalle: `/movie/:id`
+- Favoritos y watchlist con persistencia en `localStorage`
+- Comentarios por película persistentes por `tmdbId` (localStorage)
+- Reseñas de comunidad + paneles de reseñas
+- Noticias y estrenos con filtros (categoría/orden/rango)
+- Recomendador "Smart Picks"
+- Modo infantil (Kids)
+- Mapa conceptual de plataformas de streaming
+- Quiz overlay (gamificación)
+- SEO básico por ruta (title + meta description)
 
 ## Cómo correr el proyecto
 
@@ -70,7 +86,9 @@ npm run preview
 - `/recommender` – Recomendador "Smart Picks" por preferencias
 - `/kids` – Modo infantil con interfaz y contenido adaptado
 - `/tmdb` – Demo de integración con la API de TMDb
+- `/movie/:id` – Detalle dinámico por película
 - `/map` – Mapa conceptual de plataformas de streaming
+- `/watchlist` – Lista de pendientes (persistente)
 - `/about` – Acerca de / objetivo del proyecto
 - `/contact` – Formulario de contacto
 

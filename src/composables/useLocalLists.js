@@ -4,6 +4,9 @@ import { ref } from "vue";
 const KEY_FAV = "movisionary_favorites_v1";
 const KEY_WATCH = "movisionary_watchlist_v1";
 
+// 🔔 tick para sincronizar pestañas
+const KEY_TICK = "movisionary_lists_tick";
+
 function readList(key) {
   try {
     return JSON.parse(localStorage.getItem(key) || "[]");
@@ -12,14 +15,10 @@ function readList(key) {
   }
 }
 
-function writeListSafe(key, list) {
-  try {
-    localStorage.setItem(key, JSON.stringify(list));
-    return true;
-  } catch (e) {
-    console.error("[Movisionary] Error guardando en localStorage:", e);
-    return false;
-  }
+function writeList(key, list) {
+  localStorage.setItem(key, JSON.stringify(list));
+  // ✅ fuerza evento storage en otras pestañas
+  localStorage.setItem(KEY_TICK, String(Date.now()));
 }
 
 export function useLocalLists() {
@@ -31,25 +30,19 @@ export function useLocalLists() {
 
   function toggle(listRef, key, id) {
     const numId = Number(id);
-
-    // guardamos snapshot por si falla el save
-    const before = listRef.value.slice();
-
     const i = listRef.value.indexOf(numId);
+
     if (i >= 0) listRef.value.splice(i, 1);
     else listRef.value.unshift(numId);
 
-    const ok = writeListSafe(key, listRef.value);
-
-    if (!ok) {
-      // 🔥 si NO se pudo guardar, revertimos el UI
-      listRef.value = before;
-      alert("No se pudo guardar tu lista (localStorage bloqueado o sin espacio).");
-      return;
+    try {
+      writeList(key, listRef.value);
+      // ✅ refresco dentro de la misma pestaña
+      window.dispatchEvent(new CustomEvent("mv:lists"));
+    } catch (e) {
+      console.error("[Movisionary] localStorage error:", e);
+      alert("No se pudo guardar la lista (localStorage bloqueado o sin espacio).");
     }
-
-    // ✅ Notifica a la app (misma pestaña)
-    window.dispatchEvent(new CustomEvent("mv:lists"));
   }
 
   const toggleFavorite = (id) => toggle(favorites, KEY_FAV, id);

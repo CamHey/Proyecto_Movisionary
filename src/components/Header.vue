@@ -1,5 +1,5 @@
 <template>
-      <header class="header main-header">
+  <header class="header main-header">
     <div class="container">
       <!-- Logo -->
       <RouterLink class="logo" to="/" aria-label="Inicio">
@@ -16,13 +16,13 @@
       >
         ☰
       </button>
-      
+
       <nav class="menu">
-      <!-- ...tus links de router... -->
-      <button type="button" class="btn btn-ghost" @click="toggle">
-        <span v-if="isLight">🌙 Modo oscuro</span>
-        <span v-else>☀️ Modo claro</span>
-      </button>
+        <!-- ...tus links de router... -->
+        <button type="button" class="btn btn-ghost" @click="toggle">
+          <span v-if="isLight">🌙 Modo oscuro</span>
+          <span v-else>☀️ Modo claro</span>
+        </button>
       </nav>
 
       <!-- Menú principal -->
@@ -31,8 +31,11 @@
         <RouterLink :to="{ name:'news' }"     :class="{ active: isActive('/news') }">Noticias</RouterLink>
         <RouterLink :to="{ name:'reviews' }"  :class="{ active: isActive('/reviews') }">Reseñas</RouterLink>
         <RouterLink :to="{ name:'library' }"  :class="{ active: isActive('/library') }">Biblioteca</RouterLink>
+
+        <!-- ✅ NUEVO: Watchlist -->
+        <RouterLink :to="{ name:'watchlist' }" :class="{ active: isActive('/watchlist') }">Watchlist</RouterLink>
+
         <RouterLink :to="{ name:'top' }"      :class="{ active: isActive('/top') }">Top 10</RouterLink>
-       
 
         <!-- 🔁 Interruptor Modo Infantil -->
         <div class="kids-toggle">
@@ -44,6 +47,8 @@
         </div>
 
         <RouterLink class="btn btn-primary" to="/recommender">Recomendador</RouterLink>
+       
+
 
         <!-- 🌙/☀️ Tema -->
         <button
@@ -58,7 +63,6 @@
       </nav>
     </div>
   </header>
-
 </template>
 
 <script setup>

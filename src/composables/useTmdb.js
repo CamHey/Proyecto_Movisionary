@@ -11,15 +11,30 @@ export default function useTmdb() {
   const mode = ref('trending')
   const lastQuery = ref('')
 
-  // 🔹 nuevo: para paginación
+  // paginación
   const currentPage = ref(1)
   const totalPages = ref(1)
 
-  const fetchFromTmdb = async (
-    path,
-    extraParams = {},
-    { append = false } = {}
-  ) => {
+  // ✅ request genérico (NO modifica items)
+  const request = async (path, extraParams = {}) => {
+    if (!API_KEY) throw new Error('No se encontró VITE_TMDB_API_KEY en .env.local')
+
+    const url = new URL(`${BASE_URL}${path}`)
+    url.searchParams.set('api_key', API_KEY)
+    url.searchParams.set('language', 'es-ES')
+
+    Object.entries(extraParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        url.searchParams.set(key, value)
+      }
+    })
+
+    const res = await fetch(url.toString())
+    if (!res.ok) throw new Error(`Error HTTP ${res.status}`)
+    return res.json()
+  }
+
+  const fetchFromTmdb = async (path, extraParams = {}, { append = false } = {}) => {
     loading.value = true
     error.value = ''
 
@@ -31,94 +46,85 @@ export default function useTmdb() {
     }
 
     try {
-      if (!API_KEY) {
-        throw new Error('No se encontró VITE_TMDB_API_KEY en .env.local')
-      }
-
-      const url = new URL(`${BASE_URL}${path}`)
-      url.searchParams.set('api_key', API_KEY)
-      url.searchParams.set('language', 'es-ES')
-
-      Object.entries(extraParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-          url.searchParams.set(key, value)
-        }
-      })
-
-      const res = await fetch(url.toString())
-      if (!res.ok) {
-        throw new Error(`Error HTTP ${res.status}`)
-      }
-
-      const data = await res.json()
+      const data = await request(path, extraParams)
       const results = data.results || []
 
       items.value = append ? [...items.value, ...results] : results
       currentPage.value = data.page || 1
       totalPages.value = data.total_pages || 1
     } catch (e) {
-      console.error('[useTmdb] Error al obtener datos:', e)
-      error.value = e.message || 'Error al cargar datos de TMDb.'
+      console.error('[useTmdb] Error:', e)
+      error.value = e?.message || 'Error al cargar datos de TMDb.'
     } finally {
       loading.value = false
     }
   }
 
-  // 🔹 Trending (lo que ya usabas), ahora con page opcional
+  // Trending (page opcional)
   const fetchTrending = async (page = 1) => {
     mode.value = 'trending'
     lastQuery.value = ''
-    await fetchFromTmdb(
-      '/trending/movie/week',
-      { page },
-      { append: page > 1 }
-    )
+    await fetchFromTmdb('/trending/movie/week', { page }, { append: page > 1 })
   }
 
-  // 🔹 Búsqueda, también con page opcional
+  // Search (page opcional)
   const search = async (query, page = 1) => {
     const q = String(query || '').trim()
-    if (!q) {
-      return fetchTrending()
-    }
+    if (!q) return fetchTrending()
 
     mode.value = 'search'
     lastQuery.value = q
     await fetchFromTmdb(
       '/search/multi',
-      {
-        query: q,
-        include_adult: 'false',
-        page
-      },
+      { query: q, include_adult: 'false', page },
       { append: page > 1 }
     )
   }
 
-  // 🔹 NUEVO: discover para catálogo / recomendador
-  // type: 'movie' | 'tv'
-  // genreId: id numérico de género (opcional)
-  const discover = async ({
-    type = 'movie',
-    genreId = null,
-    page = 1
-  } = {}) => {
+  // ✅ Discover (flexible)
+  const discover = async ({ type = 'movie', page = 1, params = {}, genreId = null } = {}) => {
     mode.value = 'discover'
     lastQuery.value = ''
 
     const path = type === 'tv' ? '/discover/tv' : '/discover/movie'
 
-    const params = {
+    const finalParams = {
       page,
+      include_adult: 'false',
       sort_by: 'popularity.desc',
-      include_adult: 'false'
+      ...params
     }
 
-    if (genreId) {
-      params.with_genres = genreId
+    // compat: si te pasan genreId directo
+    if (genreId && !finalParams.with_genres) {
+      finalParams.with_genres = genreId
     }
 
-    await fetchFromTmdb(path, params, { append: page > 1 })
+    await fetchFromTmdb(path, finalParams, { append: page > 1 })
+  }
+
+  // ✅ Watch Providers por título (plataformas)
+  const getWatchProviders = async (type, id) => {
+    const path = type === 'tv'
+      ? `/tv/${id}/watch/providers`
+      : `/movie/${id}/watch/providers`
+
+    return request(path)
+  }
+
+  // ✅ Lista de providers con logo (para barra de logos)
+  const getProvidersList = async (type = 'movie', watch_region = 'BO') => {
+    return request(`/watch/providers/${type}`, { watch_region })
+  }
+
+  // ✅ NUEVO: Videos (para tráiler)
+  const getVideos = async (type, id) => {
+    const path = type === 'tv'
+      ? `/tv/${id}/videos`
+      : `/movie/${id}/videos`
+
+    // language es-ES ya está en request(), pero TMDb a veces devuelve mejor con ambos:
+    return request(path, { language: 'es-ES' })
   }
 
   return {
@@ -130,9 +136,18 @@ export default function useTmdb() {
     lastQuery,
     currentPage,
     totalPages,
+
     // acciones
     fetchTrending,
     search,
-    discover
+    discover,
+
+    // extra
+    request,
+    getWatchProviders,
+    getProvidersList,
+
+    // ✅ nuevo
+    getVideos
   }
 }
